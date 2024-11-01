@@ -3,20 +3,20 @@
 implemented a simple broker in golang using *grpc*.
 reaching more than 30K publishing.
 
-##Proxy
-in this project for having connection between client and server i used envoy as proxy.
+## Proxy
+in this project, for having a connection between client and server I used envoy as a proxy and also a rate-limiter.
 
-##DB
-in this project i have worked with three databases and used three modules for each
+## DB
+In this project, I have worked with three databases and used three modules for each
   1. postgres
-  2. scylla
-  3. cassandra
+  2. Scylla
+  3. Cassandra
   
-##Monitoring
-my scrapper is prometheus and data visualization is grafana. their configs are also in this repo.
+## Monitoring
+my scrapper is Prometheus and my data visualization is grafana. their configs are also in this repo.
 
-##Docker
-this project is also dockerized for those who are interseted in. see docker-compose file
+## Docker
+this project is also dockerized for those who are interested. See docker-compose file
 
-##Kubernetes
-this project also run on minikube and the point is load balancing and scaling-up was tested on this project and it worked properly(using headless servies)  
+## Kubernetes
+this project also runs on Minikube and the point is load balancing and scaling-up were tested on this project and it worked properly(using headless services)  
