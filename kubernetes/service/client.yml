@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: broker-client-service
+  labels:
+    app: broker-client-service
+spec:
+  selector:
+    app: broker-client
+  ports:
+    - name: http 
+      port: 800
+      targetPort: 800
+      nodePort: 30880
+    - name: grpc
+      port: 5000
+      targetPort: 5000
+      nodePort: 30850
+  type: NodePort
+
+# client

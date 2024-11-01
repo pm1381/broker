@@ -1,0 +1,131 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: broker-go
+    tty: true
+    stdin_open: true
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${DB_HOST}
+      - DATABASE_PORT=${DB_PORT}
+      - JAEGER_AGENT_HOST=${YAEGER_HOST}
+    ports:
+      - 80:80
+      - 50051:50051
+    volumes:
+      - .:/broker
+    depends_on:
+      - postgresdb
+    networks:
+      - bootcamp
+
+  postgresdb:
+    image: postgres:latest
+    container_name: postgres_container
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${DB_HOST}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    networks:
+      - bootcamp
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - bootcamp
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3001:3000
+    volumes:
+      - ./grafana:/var/lib/grafana
+    networks:
+      - bootcamp
+
+  jaeger:
+    image: jaegertracing/all-in-one
+    container_name: jaeger_container
+    ports:
+      - 16686:16686
+      - 6831:6831/udp
+    networks:
+      - bootcamp
+
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra_container
+    environment:
+      - CASSANDRA_CLUSTER_NAME=MyCluster
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CASSANDRA_DC=DC1
+    ports:
+      - 9042:9042
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    networks:
+      - bootcamp
+
+  scylla:
+    image: scylladb/scylla
+    ports:
+      - 9040:9042  # CQL port
+      - 7000:7000  # Inter-node communication port
+      - 7001:7001  # SSL inter-node communication port
+      - 7199:7199  # JMX port
+    volumes:
+      - scylla_data:/var/lib/scylla
+    networks:
+      - bootcamp
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data  
+    networks:
+      - bootcamp
+
+  envoy-proxy:
+    image: envoyproxy/envoy-dev:latest
+    command:
+      - "--config-path /etc/envoy/envoy.yaml"
+      - "--log-level debug"
+    volumes:
+      - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
+    expose:
+      - 10000
+      - 9901
+    ports:
+      - "10000:10000"
+      - "9901:9901"
+    networks:
+      - bootcamp 
+
+volumes:
+  pg_data:
+  cassandra_data:
+  redis_data:
+  scylla_data:
+
+networks:
+  bootcamp:
+    driver: bridge

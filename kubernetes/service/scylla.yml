@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scylla-service
+  labels:
+    app: scylla-service
+spec:
+  selector:
+    app: scylla-pod
+  type: NodePort
+  ports:
+    - name: inter-node 
+      protocol: TCP
+      port: 7000
+      targetPort: 7000
+    - name: ssl
+      protocol: TCP
+      port: 7001
+      targetPort: 7001
+    - name: cql 
+      protocol: TCP
+      port: 9042
+      targetPort: 9042
+      nodePort: 30042
+    - name: jmx
+      protocol: TCP
+      port: 7199
+      targetPort: 7199

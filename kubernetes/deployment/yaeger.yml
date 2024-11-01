@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jaeger-pod
+  template:
+    metadata:
+      labels:
+        app: jaeger-pod
+    spec:
+      containers:
+        - name: jaeger
+          image: jaegertracing/all-in-one
+          ports:
+            - containerPort: 16686
+              name: http-query
+            - containerPort: 6831
+              protocol: UDP
+              name: jaeger-agent

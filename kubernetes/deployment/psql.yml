@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psql-deploy
+spec:
+  selector:
+    matchLabels:
+      app: psql-pod
+  template:
+    metadata:
+      labels:
+        app: psql-pod
+    spec:
+      containers:
+        - name: psql
+          image: postgres:latest
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+          env:
+          - name: POSTGRES_USER
+            value: parham
+          - name: POSTGRES_PASSWORD
+            value: ParhamBootcamp8102
+          - name: POSTGRES_DB
+            value: broker
+          - name: DATABASE_HOST
+            value: postgresdb
+          # resources:
+          #   limits:
+          #     memory: "500Mi"
+          ports:
+          - containerPort: 5432
+          volumeMounts:
+            - name: psql-storage-volume
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: psql-storage-volume
+          emptyDir: {}
